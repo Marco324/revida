@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "368214688311",
+    "project_id": "revida-d535b",
+    "storage_bucket": "revida-d535b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368214688311:android:590a953573f43397da35b2",
+        "android_client_info": {
+          "package_name": "app.marcomendez.revida"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDY0H_ULwE540EfZXkhKRX6GoB1Kb2ScqA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
