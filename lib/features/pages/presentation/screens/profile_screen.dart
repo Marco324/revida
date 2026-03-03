@@ -1,0 +1,148 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:revida/features/auth/presentation/cubits/auth/auth_cubit.dart';
+
+class ProfileScreen extends StatelessWidget {
+  static String name = 'profile';
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final user = FirebaseAuth.instance.currentUser;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Perfil')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: user == null
+              ? const [Text('No hay usuario autenticado')]
+              : [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(130, 105, 255, 85),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (user.photoURL != null)
+                          CircleAvatar(
+                            radius: 40,
+                            backgroundImage: NetworkImage(user.photoURL!),
+                          ),
+
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.displayName ?? 'Sin nombre',
+                              style: textTheme.bodyLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(user.email ?? 'Sin email'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 48),
+
+                  _BotonAdvertencia(
+                    textContent: 'Borrar data',
+                    icon: Icons.delete,
+                  ),
+                  const SizedBox(height: 12),
+                  _BotonAdvertencia(
+                    textContent: 'Cerrar sesión',
+                    icon: Icons.logout_rounded,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog.adaptive(
+                          title: const Text('Cerrar sesión'),
+                          content: const Text('¿Seguro que deseas cerrar sesión?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogContext),
+                              child: const Text('Cancelar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(dialogContext);
+                                context.read<AuthCubit>().logout();
+                              },
+                              child: const Text('Cerrar sesión', style: TextStyle(color: Colors.red),),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BotonAdvertencia extends StatelessWidget {
+  const _BotonAdvertencia({
+    required this.textContent,
+    required this.icon,
+    this.onTap,
+  });
+
+  final String textContent;
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(66, 192, 192, 192),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(30),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: const Color.fromARGB(49, 158, 158, 158),
+                  child: Icon(
+                    icon,
+                    size: 32,
+                    color: Color.fromARGB(255, 37, 37, 37),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  textContent,
+                  style: textTheme.titleMedium!.copyWith(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

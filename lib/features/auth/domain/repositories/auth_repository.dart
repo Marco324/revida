@@ -4,6 +4,7 @@ import 'package:revida/features/auth/domain/entities/entities.dart';
 
 abstract class AuthRepository {
   Future<AppUser?> loginWithEmailPassword(String email, String password);
+  Future<AppUser?> signInWithGoogle();
   Future<AppUser?> registerWithEmailPassword(
     String name,
     String email,

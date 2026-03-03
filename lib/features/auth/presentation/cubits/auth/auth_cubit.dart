@@ -71,7 +71,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(Unauthenticated());
   }
 
-  //! Login
+  //! Forgot Password
   Future<String> forgotPassword(String email) async {
     try {
       final message = await authRepo.sendPasswordResetEmail(email);
@@ -81,6 +81,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  //! Delete Account
   Future<void> deleteAccount() async {
     try {
       emit(AuthLoading());
@@ -90,6 +91,23 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthError(e.toString()));
       emit(Unauthenticated());
+    }
+  }
+
+  //! Sign-in with google
+  Future<void> signInWithGoogle() async {
+    try {
+      emit(AuthLoading());
+      final user = await authRepo.signInWithGoogle();
+
+      if (user != null) {
+        _currentUser = user;
+        emit(Authenticated(user));
+      } else {
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      emit(AuthError(e.toString()));
     }
   }
 }

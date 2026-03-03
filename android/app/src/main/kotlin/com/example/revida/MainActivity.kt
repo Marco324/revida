@@ -1,4 +1,4 @@
-package com.example.revida
+package app.marcomendez.revida
 
 import io.flutter.embedding.android.FlutterActivity
 

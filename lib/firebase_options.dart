@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '368214688311',
     projectId: 'revida-d535b',
     storageBucket: 'revida-d535b.firebasestorage.app',
-    iosBundleId: 'com.example.revida',
+    iosBundleId: 'app.marcomendez.revida',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

@@ -40,4 +40,9 @@ class AuthRepositoryImpl extends AuthRepository {
     return datasource.sendPasswordResetEmail(email);
   }
   
+  @override
+  Future<AppUser?> signInWithGoogle() {
+    return datasource.signInWithGoogle();
+  }
+  
 }
