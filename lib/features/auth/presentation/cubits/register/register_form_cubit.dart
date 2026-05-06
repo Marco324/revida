@@ -92,7 +92,9 @@ class RegisterFormCubit extends Cubit<RegisterFormState> {
       state.password.value,
     );
 
-    emit(state.copyWith(isPosting: false));
+    if (!isClosed) {
+      emit(state.copyWith(isPosting: false));
+    }
   }
 
   void _touchEveryField() {

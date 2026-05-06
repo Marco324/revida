@@ -12,8 +12,10 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          LoginFormCubit(loginUserCallback: context.read<AuthCubit>().login),
+      create: (context) => LoginFormCubit(
+        loginUserCallback: context.read<AuthCubit>().login,
+        forgetSubmitCallback: context.read<AuthCubit>().forgotPassword,
+      ),
       child: const _LoginView(),
     );
   }
@@ -41,11 +43,52 @@ class _LoginView extends StatelessWidget {
           showSnackbar('No se pudo autenticar');
         }
       },
-      child: BackgroundStyle(content: _LoginBody(),),
+      child: BackgroundStyle(content: _LoginBody()),
     );
   }
 }
 
+void openForgetPasswordBox(BuildContext context) {
+  final loginForm = context.read<LoginFormCubit>();
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Forgot Password?'),
+      content: MyTextfield(
+        hintText: 'Enter Email...',
+        obscureText: false,
+        onChanged: loginForm.onForgetPassword,
+        errorMessage: loginForm.state.isFormPosted
+            ? loginForm.state.email.errorMessage
+            : null,
+      ),
+      actions: [
+        TextButton(onPressed: () => context.pop(), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () async {
+            String message = await loginForm.forgetPasswordSubmit(
+              loginForm.state.emailForgetPassword != null
+                  ? loginForm.state.emailForgetPassword!.value
+                  : '',
+            );
+
+            if (message == 'Password reset email! Check your inbox.') {
+              if (!context.mounted) return;
+              context.pop();
+            }
+
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          },
+          child: const Text('Restablecer'),
+        ),
+      ],
+    ),
+  );
+}
 
 class _LoginBody extends StatelessWidget {
   const _LoginBody();
@@ -55,17 +98,16 @@ class _LoginBody extends StatelessWidget {
     final loginForm = context.watch<LoginFormCubit>();
     final authCubit = context.watch<AuthCubit>();
 
-    const colorTextoAcento = Color(0xFF1B5E20); 
+    const colorTextoAcento = Color(0xFF1B5E20);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
       child: Column(
-        mainAxisSize: MainAxisSize.min, 
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/revida_logo.png', height: 92,),
+          Image.asset('assets/revida_new_logo.png', height: 92),
           const SizedBox(height: 20),
-      
           MyTextfield(
             onChanged: loginForm.onEmailChange,
             errorMessage: loginForm.state.isFormPosted
@@ -75,7 +117,6 @@ class _LoginBody extends StatelessWidget {
             obscureText: false,
           ),
           const SizedBox(height: 16),
-      
           MyTextfield(
             hintText: 'Contraseña',
             onChanged: loginForm.onPasswordChange,
@@ -86,21 +127,23 @@ class _LoginBody extends StatelessWidget {
             obscureText: true,
           ),
           const SizedBox(height: 10),
-      
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                'Olvidé mi contraseña',
-                style: TextStyle(
-                  color: colorTextoAcento, 
-                  fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () => openForgetPasswordBox(context),
+                child: Text(
+                  'Olvidé mi contraseña',
+                  style: TextStyle(
+                    color: colorTextoAcento,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
           ),
+
           const SizedBox(height: 20),
-      
           MyButton(
             onTap: () {
               loginForm.state.isPosting ? null : loginForm.onFormSubmit();
@@ -108,28 +151,28 @@ class _LoginBody extends StatelessWidget {
             text: 'Ingresar',
           ),
           const SizedBox(height: 20),
-      
+
           MyButton(
             imageAsset: 'assets/google_logo.png',
             onTap: () => authCubit.signInWithGoogle(),
             text: 'Inicia sesión con Google',
           ),
           const SizedBox(height: 25),
-      
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
                 '¿No tienes una cuenta? ',
-                style: TextStyle(color: Colors.black87), 
+                style: TextStyle(color: Colors.black87),
               ),
               GestureDetector(
                 onTap: () => context.push('/register'),
                 child: Text(
-                  'Regístrate ahora',
+                  'Regístrate aquí',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: colorTextoAcento, 
+                    color: colorTextoAcento,
                   ),
                 ),
               ),
@@ -140,3 +183,4 @@ class _LoginBody extends StatelessWidget {
     );
   }
 }
+

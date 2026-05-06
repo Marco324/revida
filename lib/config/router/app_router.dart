@@ -56,6 +56,24 @@ class MyApp extends StatelessWidget {
         ),
 
         GoRoute(
+          path: '/residuos',
+          name: ResiduosScreen.name,
+          builder: (context, state) => ResiduosScreen(),
+        ),
+
+        GoRoute(
+          path: '/stats',
+          name: StatsScreen.name,
+          builder: (context, state) => StatsScreen(),
+        ),
+
+        GoRoute(
+          path: '/history',
+          name: HistorialScreen.name,
+          builder: (context, state) => HistorialScreen(),
+        ),
+
+        GoRoute(
           path: '/analisis',
           name: AnalisisScreen.name,
           builder: (context, state) {

@@ -11,7 +11,6 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final user = FirebaseAuth.instance.currentUser;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Perfil')),
       body: Padding(
@@ -29,11 +28,12 @@ class ProfileScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (user.photoURL != null)
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundImage: NetworkImage(user.photoURL!),
-                          ),
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: user.photoURL != null
+                              ? NetworkImage(user.photoURL!)
+                              : AssetImage('assets/user.png'),
+                        ),
 
                         const SizedBox(width: 16),
                         Column(
@@ -53,10 +53,36 @@ class ProfileScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 48),
-
                   _BotonAdvertencia(
                     textContent: 'Borrar data',
                     icon: Icons.delete,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog.adaptive(
+                          title: const Text('Borrar data'),
+                          content: const Text(
+                            '¿Seguro que deseas borrar tu data?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogContext),
+                              child: const Text('Cancelar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(dialogContext);
+                                // context.read<AuthCubit>().logout();
+                              },
+                              child: const Text(
+                                'Aceptar',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 12),
                   _BotonAdvertencia(
@@ -67,7 +93,9 @@ class ProfileScreen extends StatelessWidget {
                         context: context,
                         builder: (dialogContext) => AlertDialog.adaptive(
                           title: const Text('Cerrar sesión'),
-                          content: const Text('¿Seguro que deseas cerrar sesión?'),
+                          content: const Text(
+                            '¿Seguro que deseas cerrar sesión?',
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(dialogContext),
@@ -78,7 +106,10 @@ class ProfileScreen extends StatelessWidget {
                                 Navigator.pop(dialogContext);
                                 context.read<AuthCubit>().logout();
                               },
-                              child: const Text('Cerrar sesión', style: TextStyle(color: Colors.red),),
+                              child: const Text(
+                                'Cerrar sesión',
+                                style: TextStyle(color: Colors.red),
+                              ),
                             ),
                           ],
                         ),
@@ -106,7 +137,6 @@ class _BotonAdvertencia extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
     return Material(
       color: Colors.transparent,
       child: Ink(

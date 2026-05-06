@@ -35,6 +35,10 @@ class AuthDatasourceImpl extends AuthDatasource {
     try {
       UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
 
+      User? user = userCredential.user;
+
+      await user?.updateDisplayName(name);
+
       AppUser appUser = AppUser(uid: userCredential.user!.uid, email: email);
 
       return appUser;

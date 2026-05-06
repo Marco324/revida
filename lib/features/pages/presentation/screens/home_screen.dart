@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:revida/features/pages/presentation/cubits/image_db_revida/image_db_revida_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
   static String name = 'home-screen';
@@ -8,7 +10,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA), 
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -22,7 +24,7 @@ class HomeScreen extends StatelessWidget {
               ),
               child: IconButton(
                 onPressed: () => context.push('/profile'),
-                icon: const Icon(Icons.person, color: Color(0xFF10B981)), 
+                icon: const Icon(Icons.person, color: Color(0xFF10B981)),
               ),
             ),
           ),
@@ -48,7 +50,7 @@ class _HomeBody extends StatelessWidget {
             _MisResiduosButton(),
             SizedBox(height: 16),
             _TotalRecicYUltRecicl(),
-            Spacer(), 
+            Spacer(),
             _EscanearButton(),
             SizedBox(height: 16),
           ],
@@ -64,118 +66,146 @@ class _TotalRecicYUltRecicl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    const verdeOscuro = Color(0xFF1B5E20); 
+    const verdeOscuro = Color(0xFF1B5E20);
 
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            height: 180, 
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              color: const Color(0xFFE8F5E9), 
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Text(
-                  'Residuos\nReciclados', 
-                  textAlign: TextAlign.center,
-                  style: textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: verdeOscuro,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white, 
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      '100',
-                      style: textTheme.headlineMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: verdeOscuro,
+    return BlocBuilder<ImageDbRevidaCubit, ImageDbRevidaState>(
+      builder: (context, state) {
+        if (state is ImageDbRevidaInitial) {
+          context.watch<ImageDbRevidaCubit>().loadReciclajes();
+        }
+
+        if (state is ImageDbRevidaLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is ImageDbRevidaLoaded) {
+          final reciclajes = state.reciclajes;
+          print(reciclajes);
+          final total = reciclajes.length;
+
+          final ultimo = reciclajes.isNotEmpty ? reciclajes.last : null;
+
+          return Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  height: 180,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    color: const Color(0xFFE8F5E9),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            height: 180,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              color: const Color(0xFFE8F5E9), // Fondo menta suave
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Último\nReciclado',
-                  textAlign: TextAlign.center,
-                  style: textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: verdeOscuro,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Papel',
-                          style: textTheme.titleLarge!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: verdeOscuro,
+                  child: Column(
+                    children: [
+                      Text(
+                        'Residuos\nReciclados',
+                        textAlign: TextAlign.center,
+                        style: textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: verdeOscuro,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            total.toString(),
+                            style: textTheme.headlineMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: verdeOscuro,
+                            ),
                           ),
                         ),
-                        Text(
-                          '24/02/25',
-                          style: textTheme.bodySmall!.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ],
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  height: 180,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    color: const Color(0xFFE8F5E9),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Último\nReciclado',
+                        textAlign: TextAlign.center,
+                        style: textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: verdeOscuro,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ultimo == null
+                              ? Text('Sin datos', style: textTheme.bodyMedium)
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      ultimo.categoria,
+                                      style: textTheme.titleLarge!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: verdeOscuro,
+                                      ),
+                                    ),
+                                    Text(
+                                      ultimo.date.toString(),
+                                      style: textTheme.bodySmall!.copyWith(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+
+        if (state is ImageDbRevidaError) {
+          return Center(child: Text(state.message));
+        }
+
+        return const SizedBox();
+      },
     );
   }
 }
@@ -189,13 +219,13 @@ class _RachaWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       width: double.infinity,
-      height: 130, 
+      height: 130,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04), 
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -206,9 +236,7 @@ class _RachaWidget extends StatelessWidget {
         children: [
           Text(
             'Racha Reciclando',
-            style: textTheme.titleLarge!.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Expanded(
@@ -221,11 +249,21 @@ class _RachaWidget extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Text(
-                    '0 días',
-                    style: textTheme.headlineSmall!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  BlocBuilder<ImageDbRevidaCubit, ImageDbRevidaState>(
+                    builder: (context, state) {
+                      int racha = 0;
+
+                      if (state is ImageDbRevidaLoaded) {
+                        racha = state.racha;
+                      }
+
+                      return Text(
+                        '$racha días',
+                        style: textTheme.headlineSmall!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    },
                   ),
                   const Spacer(),
                   const Icon(
@@ -256,11 +294,11 @@ class _EscanearButton extends StatelessWidget {
         width: double.infinity,
         height: 80,
         decoration: BoxDecoration(
-          color: const Color(0xFF10B981), // Verde Esmeralda (Acción Principal)
+          color: const Color(0xFF10B981),
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF10B981).withValues(alpha: 0.3), // Sombra del color del botón
+              color: const Color(0xFF10B981).withValues(alpha: 0.3),
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -279,11 +317,7 @@ class _EscanearButton extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const Icon(
-              Icons.camera_alt_rounded,
-              color: Colors.white,
-              size: 40, // Tamaño ajustado para no pegar en los bordes
-            ),
+            const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 40),
           ],
         ),
       ),
@@ -297,77 +331,105 @@ class _MisResiduosButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
-      onTap: () => print('Mis residuos'),
-      child: Container(
-        height: 280,
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white, 
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Mis Residuos',
-                  style: textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 20,
-                  color: Colors.grey,
+
+    return BlocBuilder<ImageDbRevidaCubit, ImageDbRevidaState>(
+      builder: (context, state) {
+        int plastico = 0;
+        int papel = 0;
+        int metal = 0;
+        int vidrio = 0;
+
+        if (state is ImageDbRevidaLoaded) {
+          for (final r in state.reciclajes) {
+            final cat = r.categoria.toLowerCase();
+
+            if (cat.contains('plastico') || cat.contains('plástico')) {
+              plastico++;
+            } else if (cat.contains('papel') ||
+                cat.contains('carton') ||
+                cat.contains('cartón')) {
+              papel++;
+            } else if (cat.contains('metal')) {
+              metal++;
+            } else if (cat.contains('vidrio')) {
+              vidrio++;
+            }
+          }
+        }
+
+        return GestureDetector(
+          onTap: () => context.push('/stats'),
+          child: Container(
+            height: 280,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  _Residuo(
-                    nomResiduo: 'Plástico',
-                    numResiduo: 5,
-                    totalMeta: 100, 
-                    color: Colors.blue,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Mis Residuos',
+                      style: textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _Residuo(
+                        nomResiduo: 'Plástico',
+                        numResiduo: plastico,
+                        totalMeta: 100,
+                        color: Colors.blue,
+                      ),
+                      _Residuo(
+                        nomResiduo: 'Papel/Cartón',
+                        numResiduo: papel,
+                        totalMeta: 100,
+                        color: const Color(0xFF8D6E63),
+                      ),
+                      _Residuo(
+                        nomResiduo: 'Metal',
+                        numResiduo: metal,
+                        totalMeta: 100,
+                        color: Colors.grey,
+                      ),
+                      _Residuo(
+                        nomResiduo: 'Vidrio',
+                        numResiduo: vidrio,
+                        totalMeta: 100,
+                        color: Colors.green,
+                      ),
+                    ],
                   ),
-                  _Residuo(
-                    nomResiduo: 'Papel/Cartón',
-                    numResiduo: 25, 
-                    totalMeta: 100,
-                    color: Color(0xFF8D6E63), // Café más suave
-                  ),
-                  _Residuo(
-                    nomResiduo: 'Metal',
-                    numResiduo: 0,
-                    totalMeta: 100,
-                    color: Colors.grey,
-                  ),
-                  _Residuo(
-                    nomResiduo: 'Orgánico',
-                    numResiduo: 60, 
-                    totalMeta: 100,
-                    color: Colors.green,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -383,7 +445,7 @@ class _Residuo extends StatelessWidget {
   final String nomResiduo;
   final Color color;
   final int numResiduo;
-  final int totalMeta; // Útil para la barra de progreso
+  final int totalMeta;
 
   @override
   Widget build(BuildContext context) {
@@ -392,18 +454,14 @@ class _Residuo extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(
-          Icons.recycling_rounded,
-          color: color,
-          size: 24,
-        ),
+        Icon(Icons.recycling_rounded, color: color, size: 24),
         const SizedBox(width: 12),
         SizedBox(
-          width: 100, // Ancho fijo para alinear las barras
+          width: 100,
           child: Text(
             nomResiduo,
             style: textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
-            overflow: TextOverflow.ellipsis, // Por si el texto es muy largo
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         const SizedBox(width: 8),
@@ -413,14 +471,14 @@ class _Residuo extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
-              backgroundColor: color.withValues(alpha: 0.15), // Fondo de la barra suave
+              backgroundColor: color.withValues(alpha: 0.15),
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
         ),
         const SizedBox(width: 12),
         SizedBox(
-          width: 30, // Fijo para que los números queden alineados a la derecha
+          width: 30,
           child: Text(
             numResiduo.toString(),
             textAlign: TextAlign.right,

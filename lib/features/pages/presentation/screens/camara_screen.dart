@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CamaraScreen extends StatelessWidget {
   static String name = 'camara';
   const CamaraScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const _CamaraBody();
@@ -15,7 +14,6 @@ class CamaraScreen extends StatelessWidget {
 
 class _CamaraBody extends StatefulWidget {
   const _CamaraBody();
-
   @override
   State<_CamaraBody> createState() => _CamaraBodyState();
 }
@@ -34,15 +32,9 @@ class _CamaraBodyState extends State<_CamaraBody> {
 
   Future<void> _checkAndShowInstructions({bool forceShow = false}) async {
     final prefs = await SharedPreferences.getInstance();
-    // Revisa si ya vio las instrucciones (si es null, es la primera vez)
     final hasSeenInstructions = prefs.getBool('hasSeenCameraInstructions') ?? false;
-
-    // Si ya las vio y no estamos forzando a mostrarlas, salimos
     if (hasSeenInstructions && !forceShow) return;
-
     if (!mounted) return;
-
-    // Mostramos el diálogo bonito
     await showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
@@ -89,8 +81,6 @@ class _CamaraBodyState extends State<_CamaraBody> {
         ),
       ),
     );
-
-    // Guardamos en memoria que ya las vio para que no vuelva a salir
     await prefs.setBool('hasSeenCameraInstructions', true);
   }
 
@@ -161,17 +151,14 @@ class _CamaraBodyState extends State<_CamaraBody> {
       ),
       body: Stack(
         children: [
-          // 2. Cámara ocupando todo el fondo
           Positioned.fill(child: CameraPreview(camera)),
-      
-          // 3. Marco de escaneo estilo Inteligencia Artificial
           Positioned.fill(
             child: IgnorePointer(
               child: Padding(
                 padding: const EdgeInsets.only(
-                  top: 140.0, // Espacio para librar el AppBar
+                  top: 140.0, 
                   bottom:
-                      180.0, // Espacio extra para librar tus controles flotantes
+                      180.0, 
                   left: 40.0,
                   right: 40.0,
                 ),
@@ -179,8 +166,6 @@ class _CamaraBodyState extends State<_CamaraBody> {
               ),
             ),
           ),
-      
-          // 4. Panel de controles flotante en la parte inferior
           Positioned(
             bottom: 40,
             left: 20,
@@ -193,7 +178,6 @@ class _CamaraBodyState extends State<_CamaraBody> {
   }
 }
 
-// Widget separado para los controles inferiores
 class _BottomControls extends StatefulWidget {
   final CameraController controller;
   const _BottomControls({required this.controller});
@@ -211,13 +195,13 @@ class _BottomControlsState extends State<_BottomControls> {
     return Container(
       height: 100,
       decoration: BoxDecoration(
-        color: Colors.white, // Fondo blanco limpio
+        color: Colors.white, 
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(
               alpha: 0.15,
-            ), // Sombra un poco más marcada por flotar sobre la cámara
+            ), 
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -226,7 +210,6 @@ class _BottomControlsState extends State<_BottomControls> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Botón central de captura
           GestureDetector(
             onTapDown: (_) => setState(() => isPressed = true),
             onTapUp: (_) => setState(() => isPressed = false),
@@ -242,7 +225,7 @@ class _BottomControlsState extends State<_BottomControls> {
               width: isPressed ? 70 : 76,
               height: isPressed ? 70 : 76,
               decoration: BoxDecoration(
-                color: const Color(0xFF10B981), // Verde Esmeralda
+                color: const Color(0xFF10B981),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -260,7 +243,6 @@ class _BottomControlsState extends State<_BottomControls> {
             ),
           ),
 
-          // Botón de Flash alineado a la derecha
           Positioned(
             right: 20,
             child: IconButton(
@@ -283,7 +265,6 @@ class _BottomControlsState extends State<_BottomControls> {
   }
 }
 
-// Painter personalizado para dibujar las esquinas del escáner
 class _ScannerOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -298,7 +279,6 @@ class _ScannerOverlayPainter extends CustomPainter {
     // Arriba Izquierda
     canvas.drawLine(const Offset(0, cornerLength), const Offset(0, 0), paint);
     canvas.drawLine(const Offset(0, 0), const Offset(cornerLength, 0), paint);
-
     // Arriba Derecha
     canvas.drawLine(
       Offset(size.width - cornerLength, 0),
@@ -310,7 +290,6 @@ class _ScannerOverlayPainter extends CustomPainter {
       Offset(size.width, cornerLength),
       paint,
     );
-
     // Abajo Izquierda
     canvas.drawLine(
       Offset(0, size.height - cornerLength),
@@ -322,7 +301,6 @@ class _ScannerOverlayPainter extends CustomPainter {
       Offset(cornerLength, size.height),
       paint,
     );
-
     // Abajo Derecha
     canvas.drawLine(
       Offset(size.width, size.height - cornerLength),

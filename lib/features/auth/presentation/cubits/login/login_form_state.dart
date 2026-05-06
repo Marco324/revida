@@ -6,9 +6,11 @@ class LoginFormState {
   final bool isFormPosted;
   final bool isValid;
   final Email email;
+  final Email? emailForgetPassword;
   final Password password;
 
   const LoginFormState({
+    this.emailForgetPassword,
     this.isPosting = false,
     this.isFormPosted = false,
     this.isValid = false,
@@ -21,6 +23,7 @@ class LoginFormState {
     bool? isFormPosted,
     bool? isValid,
     Email? email,
+    Email? emailForgetPassword,
     Password? password,
   }) {
     return LoginFormState(
@@ -28,6 +31,7 @@ class LoginFormState {
       isFormPosted: isFormPosted ?? this.isFormPosted,
       isValid: isValid ?? this.isValid,
       email: email ?? this.email,
+      emailForgetPassword: emailForgetPassword ?? this.emailForgetPassword,
       password: password ?? this.password,
     );
   }

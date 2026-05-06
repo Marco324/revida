@@ -7,8 +7,9 @@ part 'login_form_state.dart';
 
 class LoginFormCubit extends Cubit<LoginFormState> {
   final Future<void> Function(String, String) loginUserCallback;
+  final Future<String> Function(String)? forgetSubmitCallback;
 
-  LoginFormCubit({required this.loginUserCallback})
+  LoginFormCubit({required this.loginUserCallback, this.forgetSubmitCallback,})
     : super(const LoginFormState());
 
   void onEmailChange(String value) {
@@ -52,6 +53,18 @@ class LoginFormCubit extends Cubit<LoginFormState> {
     if (!isClosed) {
       emit(state.copyWith(isPosting: false));
     }
+  }
+
+  void onForgetPassword(String value) {
+    final email = Email.dirty(value);
+
+    emit(state.copyWith(emailForgetPassword: email, isValid: Formz.validate([email])));
+  }
+
+  Future<String> forgetPasswordSubmit(String email) async {
+    if (!state.isValid) return '';
+
+    return await forgetSubmitCallback!(email);
   }
 
   void _touchEveryField() {

@@ -1,16 +1,35 @@
-# revida
+## 🔥 Firebase Setup
 
-A new Flutter project.
+Este proyecto usa **Firebase Authentication**.
 
-## Getting Started
+## ⚠️ Importante
+Este repositorio no incluye el archivo google-services.json por razones de seguridad.
+Para ejectuarlo hay que configurar un proyecto propio en Firebase.
 
-This project is a starting point for a Flutter application.
+Para poder ejecutarlo correctamente, sigue estos pasos:
 
-A few resources to get you started if this is your first Flutter project:
+### 1️⃣ Crear un proyecto en Firebase
+- Ve a https://console.firebase.google.com/
+- Crea un nuevo proyecto.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 2️⃣ Agregar una app Android
+- Dentro del proyecto, selecciona **Agregar app → Android**.
+- Usa el mismo `applicationId` que aparece en:
+  android/app/build.gradle
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 3️⃣ Descargar el archivo `google-services.json`
+- Firebase te dará un archivo llamado:
+google-services.json
+
+### 4️⃣ Colocarlo en la siguiente ruta del proyecto:
+android/app/
+
+### 5️⃣ Instalar dependencias y ejecutar
+
+Desde la raíz del proyecto ejecuta:
+
+```bash
+flutter pub get
+flutter run
+```
+

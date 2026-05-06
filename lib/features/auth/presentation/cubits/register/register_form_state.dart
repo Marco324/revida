@@ -5,7 +5,7 @@ class RegisterFormState {
   final bool isPosting;
   final bool isFormPosted;
   final bool isValid;
-    final bool isPasswordsEquals;
+  final bool isPasswordsEquals;
   final FullName name;
   final Email email;
   final Password password;
