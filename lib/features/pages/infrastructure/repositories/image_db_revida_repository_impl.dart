@@ -33,5 +33,12 @@ class ImageDbRevidaRepositoryImpl extends ImageDbRevidaRepository {
   Future<List<Reciclaje>> loadReciclajes() async {
     return await revidaDatasource.loadReciclajes();
   }
+  
+  @override
+  Future<List<Reciclaje>> borrarData() async {
+    return await revidaDatasource.borrarData();
+  }
+
+  
 
 }

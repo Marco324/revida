@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:revida/features/auth/presentation/cubits/auth/auth_cubit.dart';
 
+import 'package:revida/features/pages/presentation/cubits/image_db_revida/image_db_revida_cubit.dart';
+
 class ProfileScreen extends StatelessWidget {
   static String name = 'profile';
   const ProfileScreen({super.key});
@@ -70,9 +72,18 @@ class ProfileScreen extends StatelessWidget {
                               child: const Text('Cancelar'),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.pop(dialogContext);
-                                // context.read<AuthCubit>().logout();
+
+                                await context.read<ImageDbRevidaCubit>().borrarData();
+
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Data eliminada correctamente'),
+                                    ),
+                                  );
+                                }
                               },
                               child: const Text(
                                 'Aceptar',

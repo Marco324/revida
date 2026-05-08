@@ -7,4 +7,6 @@ abstract class ImageDbRevidaRepository {
     double confianza,
   );
   Future<List<Reciclaje>> loadReciclajes();
+
+  Future<List<Reciclaje>> borrarData();
 }

@@ -32,42 +32,70 @@ class RevidaDatasourceImpl extends RevidaDatasource {
   }
 
   @override
-Future<List<Reciclaje>> loadReciclajes() async {
-  try {
-    // 1. Obtener el ID del usuario actual
-    final String? uid = FirebaseAuth.instance.currentUser?.uid;
+  Future<List<Reciclaje>> loadReciclajes() async {
+    try {
+      // 1. Obtener el ID del usuario actual
+      final String? uid = FirebaseAuth.instance.currentUser?.uid;
 
-    if (uid == null) {
-      print("Error: No hay usuario autenticado.");
+      if (uid == null) {
+        print("Error: No hay usuario autenticado.");
+        return [];
+      }
+
+      // 2. Consultar la colección filtrando por el userId
+
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('residuos')
+          .where('userId', isEqualTo: uid)
+          .orderBy('date', descending: true)
+          .get();
+
+      // 3. Mapear los documentos a tu entidad Reciclaje
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        print('Se mapeo correctamente');
+
+        return Reciclaje(
+          categoria: data['categoria'] ?? '',
+          imageUrl: data['imageUrl'] ?? '',
+          confianza: (data['confianza'] as num?)?.toDouble() ?? 0.0,
+          date: (data['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        );
+      }).toList();
+    } catch (e) {
+      print("Error al cargar reciclajes: $e");
       return [];
     }
-
-    // 2. Consultar la colección filtrando por el userId
-    
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('residuos')
-        .where('userId', isEqualTo: uid)
-        .orderBy('date', descending: true)
-        .get();
-
-    // 3. Mapear los documentos a tu entidad Reciclaje
-    return querySnapshot.docs.map((doc) {
-      final data = doc.data();
-      print('Se mapeo correctamente');
-      
-      return Reciclaje(
-        categoria: data['categoria'] ?? '',
-        imageUrl: data['imageUrl'] ?? '',
-        confianza: (data['confianza'] as num?)?.toDouble() ?? 0.0,
-        date: (data['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      );
-    }).toList();
-
-    
-
-  } catch (e) {
-    print("Error al cargar reciclajes: $e");
-    return [];
   }
-}
+
+  @override
+  Future<List<Reciclaje>> borrarData() async {
+    try {
+      // Obtener UID del usuario actual
+      final String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+      if (uid == null) {
+        print("Error: No hay usuario autenticado.");
+        return [];
+      }
+
+      // Buscar todos los documentos del usuario
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('residuos')
+          .where('userId', isEqualTo: uid)
+          .get();
+
+      // Eliminar cada documento
+      for (final doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      print("Todos los documentos del usuario fueron eliminados.");
+
+      return [];
+    } catch (e) {
+      print("Error al borrar reciclajes: $e");
+      return [];
+    }
+  }
 }

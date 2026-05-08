@@ -76,4 +76,18 @@ class ImageDbRevidaCubit extends Cubit<ImageDbRevidaState> {
       emit(ImageDbRevidaError(e.toString()));
     }
   }
+
+  // Borrar reciclajes
+
+  Future<void> borrarData() async {
+    try {
+      emit(ImageDbRevidaLoading());
+
+      await repository.borrarData();
+
+      emit(const ImageDbRevidaLoaded([], 0));
+    } catch (e) {
+      emit(ImageDbRevidaError(e.toString()));
+    }
+  }
 }
